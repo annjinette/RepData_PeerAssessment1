@@ -1,0 +1,118 @@
+---
+output: word_document
+---
+## Activity Monitoring Assignment
+
+> Reproducible Research
+> Peer Assessment 1
+> annjinette
+
+The following analyzes personal activity from a monitoring device for one individual for over 2 months, providing data at five minute intervals throughout.  We will look at 5 questions:  
+  
+*1. What is the mean total number of steps taken per day?  *
+*2. What is the average daily activity pattern?  *
+*3. Are there patterns in the missing values?  *
+*4. Are there differences in activity patterns between weekends and weekdays?  *
+
+### Loading and Preprocessing the Data
+```{r}
+##set working directory; create data folder if non exists
+setwd("/Users/ann.hess/Desktop/files")
+if(!file.exists("data")) {
+        dir.create("data")
+}
+setwd("/Users/ann.hess/Desktop/files/data")
+
+#read data
+data <- read.csv("./activity 2.csv", header=T,
+                      check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+#format dates
+data$date <- as.Date(data$date)
+#using ggplot2 for visualizations
+library(ggplot2)
+```
+
+### What is the mean total number of steps taken per day?  
+#### Histogram - Total Steps  
+```{r, echo=TRUE}
+#aggregate data for analysis
+totalSteps <- aggregate(steps ~ date, data = data, sum, na.rm=T)
+
+#histogram total steps per day
+qplot(steps, data = totalSteps, geom="histogram")  
+```
+#### Mean Steps Overall  
+```{r, echo=TRUE}
+mean(totalSteps$steps)
+```
+#### Median Steps Overall  
+```{r, echo=TRUE}
+median(totalSteps$steps)
+```
+### What is the average daily activity pattern?  
+```{r, echo=TRUE}
+#average activity pattern
+avgSteps <- aggregate(steps ~ interval, data = data, mean, na.rm=T)
+qplot(interval, steps, data = avgSteps)
+```
+### Are there patterns in the missing values?  
+#### Number of Missing Values  
+```{r, echo=TRUE}
+sum(is.na(data))
+```
+#### Create Dataset with NA values replaces with mean in 5 minute interval  
+```{r, echo=TRUE}
+#replace NA values wiht mean in 5 min interval
+StepsAverage <- aggregate(steps ~ interval, data = data, FUN = mean)
+fillNA <- numeric()
+for (i in 1:nrow(data)) {
+        obs <- data[i, ]
+        if (is.na(obs$steps)) {
+                steps <- subset(StepsAverage, interval == obs$interval)$steps
+        } else {
+                steps <- obs$steps
+        }
+        fillNA <- c(fillNA, steps)
+}
+#new dataset
+newData <- data
+newData$steps <- fillNA
+totalSteps2 <- aggregate(steps ~ date, data = newData, sum, na.rm=T)
+```
+#### Histogram - Total Steps by Day  
+```{r, echo = TRUE}
+qplot(steps, data = totalSteps2, geom="histogram")  
+```
+#### Mean Steps Overall - NAs Included  
+```{r, echo = TRUE}
+mean(totalSteps2$steps)
+````
+#### Median Steps Overall - NAs Included  
+```{r, echo = TRUE}
+median(totalSteps2$steps)
+````
+### Are there differences in activity patterns between weekends and weekdays?  
+#### Create factor variable in dataset with 2 levels - weekend and weekday   
+```{r, echo = TRUE}
+day <- weekdays(data$date)
+daylevel <- vector()
+for (i in 1:nrow(data)) {
+        if (day[i] == "Saturday") {
+                daylevel[i] <- "Weekend"
+        } else if (day[i] == "Sunday") {
+                daylevel[i] <- "Weekend"
+        } else {
+                daylevel[i] <- "Weekday"
+        }
+}
+data$daylevel <- daylevel
+data$daylevel <- factor(data$daylevel)
+````
+#### Plot Activity Weekend vs Weekday   
+```{r, echo = TRUE}
+stepsByDay <- aggregate(steps ~ interval + daylevel, data = data, mean)
+names(stepsByDay) <- c("interval", "daylevel", "steps")
+qplot(interval, steps, data = stepsByDay, facets=.~daylevel)
+````
+
+
