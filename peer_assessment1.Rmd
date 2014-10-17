@@ -29,7 +29,7 @@ data <- read.csv("./activity 2.csv", header=T,
 #format dates
 data$date <- as.Date(data$date)
 #using ggplot2 for visualizations
-library(ggplot2)
+library(ggplot2)  
 ```
 
 ### What is the mean total number of steps taken per day?  
@@ -39,11 +39,13 @@ library(ggplot2)
 totalSteps <- aggregate(steps ~ date, data = data, sum, na.rm=T)
 
 #histogram total steps per day
-qplot(steps, data = totalSteps, geom="histogram")  
+qplot(steps, data = totalSteps, geom="histogram")
+dev.copy(png,file="total_steps.png", height=480, width=480)
+dev.off()  
 ```
 #### Mean Steps Overall  
 ```{r, echo=TRUE}
-mean(totalSteps$steps)
+mean(totalSteps$steps)  
 ```
 #### Median Steps Overall  
 ```{r, echo=TRUE}
@@ -54,6 +56,8 @@ median(totalSteps$steps)
 #average activity pattern
 avgSteps <- aggregate(steps ~ interval, data = data, mean, na.rm=T)
 qplot(interval, steps, data = avgSteps)
+dev.copy(png,file="avg_daily_activity.png", height=480, width=480)
+dev.off()  
 ```
 ### Are there patterns in the missing values?  
 #### Number of Missing Values  
@@ -77,11 +81,13 @@ for (i in 1:nrow(data)) {
 #new dataset
 newData <- data
 newData$steps <- fillNA
-totalSteps2 <- aggregate(steps ~ date, data = newData, sum, na.rm=T)
+totalSteps2 <- aggregate(steps ~ date, data = newData, sum, na.rm=T)  
 ```
 #### Histogram - Total Steps by Day  
 ```{r, echo = TRUE}
-qplot(steps, data = totalSteps2, geom="histogram")  
+qplot(steps, data = totalSteps2, geom="histogram")
+dev.copy(png,file="total_daily_steps.png", height=480, width=480)
+dev.off()  
 ```
 #### Mean Steps Overall - NAs Included  
 ```{r, echo = TRUE}
@@ -113,6 +119,8 @@ data$daylevel <- factor(data$daylevel)
 stepsByDay <- aggregate(steps ~ interval + daylevel, data = data, mean)
 names(stepsByDay) <- c("interval", "daylevel", "steps")
 qplot(interval, steps, data = stepsByDay, facets=.~daylevel)
+dev.copy(png,file="weekday_end_plot.png", height=480, width=480)
+dev.off() 
 ````
 
 
