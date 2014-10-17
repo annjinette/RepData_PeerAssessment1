@@ -1,5 +1,5 @@
 ---
-output: word_document
+output: html_document
 ---
 ## Activity Monitoring Assignment
 
@@ -9,10 +9,10 @@ output: word_document
 
 The following analyzes personal activity from a monitoring device for one individual for over 2 months, providing data at five minute intervals throughout.  We will look at 5 questions:  
   
-*1. What is the mean total number of steps taken per day?  *
-*2. What is the average daily activity pattern?  *
-*3. Are there patterns in the missing values?  *
-*4. Are there differences in activity patterns between weekends and weekdays?  *
+*1. What is the mean total number of steps taken per day?  *  
+*2. What is the average daily activity pattern?  *  
+*3. Are there patterns in the missing values?  *  
+*4. Are there differences in activity patterns between weekends and weekdays?  *  
 
 ### Loading and Preprocessing the Data
 ```{r}
